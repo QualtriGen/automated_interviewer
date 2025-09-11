@@ -67,7 +67,7 @@ This repository contains an advanced AI interviewer implementation that conducts
 1. Create a new **Text/Graphic** question in your survey
 2. Click the gear icon and select **Add JavaScript**
 3. Copy the entire contents of `automated_interviewer.js`
-4. Replace `'AIzaSyBlGPD10dNrjkid1GTqSHoDkp61foP2wbY'` with your actual API key
+4. Replace `'ADD YOUR GOOGLE API KEY HERE'` with your actual API key
 5. Save the question
 
 ### Step 4: Test Your Implementation
