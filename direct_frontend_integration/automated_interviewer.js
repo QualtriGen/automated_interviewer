@@ -1,7 +1,7 @@
 Qualtrics.SurveyEngine.addOnload(function() {
     // Configuration
     var CONFIG = {
-        API_KEY: 'AIzaSyBlGPD10dNrjkid1GTqSHoDkp61foP2wbY', // Replace with your actual API key
+        API_KEY: 'ADD YOUR GOOGLE API KEY HERE', // Replace with your actual API key
         API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent',
         MAX_RETRIES: 3,
         RETRY_DELAY: 1000,
@@ -720,3 +720,4 @@ Qualtrics.SurveyEngine.addOnUnload(function() {
         console.error('Error during final save:', error);
     }
 });
+
