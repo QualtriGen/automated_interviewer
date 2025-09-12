@@ -15,6 +15,7 @@ app = Flask(__name__)
 
 # Configure CORS to allow Qualtrics domains
 CORS(app, origins=[
+    "*",
     "https://*.qualtrics.com",
     "https://qualtrics.com",
     "http://localhost:*"  # For local testing
@@ -228,4 +229,5 @@ if __name__ == '__main__':
         host='0.0.0.0',
         port=port,
         debug=debug
+
     )
