@@ -7,7 +7,7 @@ An intelligent interview bot for Qualtrics surveys that conducts empathetic conv
 This tool provides an AI-powered interview interface in Qualtrics surveys that can conduct natural conversations with intelligent response analysis. It consists of:
 
 1. **Flask Backend** (`app.py`) - Securely handles Gemini API requests
-2. **Qualtrics Frontend** (`interview_bot_client.js`) - JavaScript for the chat interface with voice input support
+2. **Qualtrics Frontend** (`GenAI_interview_bot_client.js`) - JavaScript for the chat interface with voice input support
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ This tool provides an AI-powered interview interface in Qualtrics surveys that c
 
 ### 2. Set Up Qualtrics
 
-1. Edit `interview_bot_client.js`:
+1. Edit `GenAI_interview_bot_client.js`:
    ```javascript
    BACKEND_URL: 'https://[your-service-name].onrender.com'
    ```
@@ -43,7 +43,7 @@ This tool provides an AI-powered interview interface in Qualtrics surveys that c
 2. In Qualtrics:
    - Create a new question (Text/Graphic type)
    - Click the question → "JavaScript"
-   - Paste the entire `interview_bot_client.js` content
+   - Paste the entire `GenAI_interview_bot_client.js` content
    - Save
 
 3. Add these Embedded Data fields in Survey Flow:
@@ -58,8 +58,7 @@ This tool provides an AI-powered interview interface in Qualtrics surveys that c
 ## Files Description
 
 - **`app.py`** - Flask backend server with CORS configured for Qualtrics
-- **`interview_bot_client.js`** - Qualtrics frontend with voice input and intelligent orchestration
-- **`interview_bot_qualtrics.js`** - Original standalone version (API key in frontend - not recommended)
+- **`GenAI_interview_bot_client.js`** - Qualtrics frontend with voice input and intelligent orchestration
 - **`requirements.txt`** - Python dependencies
 - **`render.yaml`** - Render deployment configuration
 - **`.env.example`** - Environment variable template for local development
@@ -89,7 +88,7 @@ This tool provides an AI-powered interview interface in Qualtrics surveys that c
 **Backend not responding:**
 - Check if Render service is running
 - For free tier: wait 30-60 seconds if service was sleeping
-- Verify URL in `interview_bot_client.js` has correct backend URL
+- Verify URL in `GenAI_interview_bot_client.js` has correct backend URL
 
 **CORS errors:**
 - Ensure you're testing from actual Qualtrics preview
