@@ -28,8 +28,9 @@ Qualtrics.SurveyEngine.addOnload(function() {
         recognition: null,
         isRecording: false,
         isSupported: false,
-        finalTranscript: '',
-        interimTranscript: ''
+        accumulatedTranscript: '', // Stores all final transcripts
+        currentInterim: '', // Current interim transcript
+        baseText: '' // Text that was in the field before voice input started
     };
 
     // Initialize speech recognition
@@ -48,6 +49,15 @@ Qualtrics.SurveyEngine.addOnload(function() {
             // Speech recognition event handlers
             voiceState.recognition.onstart = function() {
                 voiceState.isRecording = true;
+                voiceState.accumulatedTranscript = '';
+                voiceState.currentInterim = '';
+                
+                // Store the existing text in the input field
+                var userInput = document.getElementById('user-input');
+                if (userInput) {
+                    voiceState.baseText = userInput.value;
+                }
+                
                 updateMicrophoneButton();
                 showStatus('Listening... Speak clearly about your experience.');
             };
@@ -56,7 +66,8 @@ Qualtrics.SurveyEngine.addOnload(function() {
                 var interim_transcript = '';
                 var final_transcript = '';
                 
-                for (var i = event.resultIndex; i < event.results.length; ++i) {
+                // Process all results from the current session
+                for (var i = 0; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         final_transcript += event.results[i][0].transcript;
                     } else {
@@ -64,13 +75,24 @@ Qualtrics.SurveyEngine.addOnload(function() {
                     }
                 }
                 
-                voiceState.finalTranscript = final_transcript;
-                voiceState.interimTranscript = interim_transcript;
+                // Accumulate final transcripts (append, don't replace)
+                if (final_transcript && final_transcript !== voiceState.accumulatedTranscript) {
+                    voiceState.accumulatedTranscript += final_transcript;
+                }
                 
-                // Update the input field with transcribed text
+                voiceState.currentInterim = interim_transcript;
+                
+                // Update the input field: base text + accumulated final + current interim
                 var userInput = document.getElementById('user-input');
                 if (userInput) {
-                    userInput.value = voiceState.finalTranscript + voiceState.interimTranscript;
+                    var fullText = voiceState.baseText;
+                    if (voiceState.accumulatedTranscript) {
+                        fullText += (fullText ? ' ' : '') + voiceState.accumulatedTranscript;
+                    }
+                    if (voiceState.currentInterim) {
+                        fullText += (fullText ? ' ' : '') + voiceState.currentInterim;
+                    }
+                    userInput.value = fullText;
                 }
                 
                 // Show interim results in status
@@ -109,11 +131,25 @@ Qualtrics.SurveyEngine.addOnload(function() {
                 voiceState.isRecording = false;
                 updateMicrophoneButton();
                 
-                if (voiceState.finalTranscript) {
-                    showStatus('Voice input complete. You can edit the text or send your response.');
+                // Only update input if we haven't already sent the message
+                if (!isProcessing) {
+                    var userInput = document.getElementById('user-input');
+                    if (userInput && voiceState.accumulatedTranscript) {
+                        var finalText = voiceState.baseText;
+                        if (voiceState.accumulatedTranscript) {
+                            finalText += (finalText ? ' ' : '') + voiceState.accumulatedTranscript;
+                        }
+                        userInput.value = finalText;
+                        showStatus('Voice input complete. You can continue typing or send your response.');
+                    } else {
+                        showStatus('');
+                    }
                 } else {
+                    // Clear status if we're already processing
                     showStatus('');
                 }
+                
+                voiceState.currentInterim = '';
             };
             
         } else {
@@ -138,15 +174,14 @@ Qualtrics.SurveyEngine.addOnload(function() {
             // Stop recording
             voiceState.recognition.stop();
         } else {
-            // Start recording
-            voiceState.finalTranscript = '';
-            voiceState.interimTranscript = '';
-            
-            // Clear the input field before starting
+            // Start recording - preserve existing text
             var userInput = document.getElementById('user-input');
             if (userInput) {
-                userInput.value = '';
+                voiceState.baseText = userInput.value;
             }
+            
+            voiceState.accumulatedTranscript = '';
+            voiceState.currentInterim = '';
             
             try {
                 voiceState.recognition.start();
@@ -338,7 +373,7 @@ Qualtrics.SurveyEngine.addOnload(function() {
                     '<button id="send-btn" style="padding: 12px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Send</button>' +
                 '</div>' +
                 '<div id="status-message" style="margin-top: 10px; font-size: 12px; color: #666; min-height: 16px;"></div>' +
-                '<div id="voice-tip" style="margin-top: 5px; font-size: 11px; color: #888; font-style: italic;">💡 Tip: Click the microphone to speak your response. Detailed spoken responses help us understand your experience better.</div>' +
+                '<div id="voice-tip" style="margin-top: 5px; font-size: 11px; color: #888; font-style: italic;">💡 Tip: Voice input appends to your existing text. You can type, speak, and edit before sending.</div>' +
             '</div>' +
         '</div>';
         
@@ -426,6 +461,12 @@ Qualtrics.SurveyEngine.addOnload(function() {
         
         userInput.value = '';
         userInput.style.height = 'auto'; // Reset height
+        
+        // IMPORTANT: Clear voice state to prevent it from repopulating the input
+        voiceState.accumulatedTranscript = '';
+        voiceState.currentInterim = '';
+        voiceState.baseText = '';
+        
         addMessageToChat('user', message);
         
         saveToEmbeddedData('user_response', message);
@@ -720,4 +761,3 @@ Qualtrics.SurveyEngine.addOnUnload(function() {
         console.error('Error during final save:', error);
     }
 });
-
