@@ -77,14 +77,6 @@ This repository contains an advanced AI interviewer implementation that conducts
 3. Verify that conversations flow naturally and data is being captured
 4. Check browser console (F12) for any errors
 
-## File Structure
-
-```
-├── automated_interviewer.js    # Main JavaScript implementation
-├── README.md                   # This file
-└── docs/                      # Additional documentation
-    └── implementation_guide.pdf # Detailed implementation guide
-```
 
 ## How It Works
 
