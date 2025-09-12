@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: interview-bot-api
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: GEMINI_API_KEY
+        sync: false  # This will prompt you to add it manually in Render dashboard
+      - key: FLASK_ENV
+        value: production
+```
+
+```
+
